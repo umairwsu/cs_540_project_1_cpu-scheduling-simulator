@@ -4,11 +4,14 @@ import ProcessInput from '../components/ProcessInput';
 import BarChart from '../components/BarChart';
 import jsPDF from 'jspdf';
 import { fifo } from '../utils/fifo';
+import { rr } from '../utils/rr';
 import { generateProcesses } from '../utils/processQueue';
 
 export default function Home() {
   const [processes, setProcesses] = useState([]);
   const [fifoResults, setFifoResults] = useState([]);
+  const [rrResults, setRrResults] = useState([]);
+
 
   const handleRun = async (numProcesses, timeQuantum) => {
     const generatedProcesses = generateProcesses(numProcesses);
@@ -19,6 +22,7 @@ export default function Home() {
       []
     ];
     await fifo(generatedProcesses, setFifoResults);
+    await rr(generatedProcesses, timeQuantum, setRrResults);
   };
 
   const downloadPDF = () => {
@@ -41,7 +45,19 @@ export default function Home() {
       doc.text(`Process ${res.id}: Completion Time - ${res.completionTime}`, 10, y);
       y += 8;
     });
-    
+    // Add spacing between sections
+    y += 10;
+  
+    // RR Results
+    doc.setFontSize(titleFontSize);
+    doc.text('RR Results:', 10, y);
+    y += 10;
+    doc.setFontSize(textFontSize);
+    rrResults.forEach((res) => {
+      doc.text(`Process ${res.id}: Completion Time - ${res.completionTime}`, 10, y);
+      y += 8;
+    });
+
     doc.save('cpu-scheduling-results.pdf');
   };
 
@@ -55,6 +71,9 @@ export default function Home() {
       <div className="flex flex-col items-center gap-4 mt-4">
         <div className="w-full md:w-1/2 h-64">
         <BarChart data={fifoResults} title="FIFO Results" />
+        </div>
+        <div className="w-full md:w-1/2 h-64">
+        <BarChart data={rrResults} title="RR Results" />
         </div>
       </div>
     </main>
