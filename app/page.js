@@ -5,13 +5,18 @@ import BarChart from '../components/BarChart';
 import jsPDF from 'jspdf';
 import { fifo } from '../utils/fifo';
 import { rr } from '../utils/rr';
+import { sjf } from '../utils/sjf';
+import { stcf } from '../utils/stcf';
+import { mlfq } from '../utils/mlfq';
 import { generateProcesses } from '../utils/processQueue';
 
 export default function Home() {
   const [processes, setProcesses] = useState([]);
   const [fifoResults, setFifoResults] = useState([]);
   const [rrResults, setRrResults] = useState([]);
-
+  const [sjfResults, setSjfResults] = useState([]);
+  const [stcfResults, setStcfResults] = useState([]);
+  const [mlfqResults, setMlfqResults] = useState([]);
 
   const handleRun = async (numProcesses, timeQuantum) => {
     const generatedProcesses = generateProcesses(numProcesses);
@@ -23,6 +28,9 @@ export default function Home() {
     ];
     await fifo(generatedProcesses, setFifoResults);
     await rr(generatedProcesses, timeQuantum, setRrResults);
+    await sjf(generatedProcesses, setSjfResults);
+    await stcf(generatedProcesses, setStcfResults);
+    await mlfq(generatedProcesses, queues, setMlfqResults);
   };
 
   const downloadPDF = () => {
@@ -46,8 +54,8 @@ export default function Home() {
       y += 8;
     });
     // Add spacing between sections
-    y += 10;
-  
+    y += 10;  
+
     // RR Results
     doc.setFontSize(titleFontSize);
     doc.text('RR Results:', 10, y);
@@ -57,7 +65,40 @@ export default function Home() {
       doc.text(`Process ${res.id}: Completion Time - ${res.completionTime}`, 10, y);
       y += 8;
     });
-
+    // Add spacing between sections
+    y += 10;  
+    // SJF Results
+    doc.setFontSize(titleFontSize);
+    doc.text('SJF Results:', 10, y);
+    y += 10;
+    doc.setFontSize(textFontSize);
+    sjfResults.forEach((res) => {
+      doc.text(`Process ${res.id}: Completion Time - ${res.completionTime}`, 10, y);
+      y += 8;
+    });
+  
+    // STCF Results
+    y += 10;
+    doc.setFontSize(titleFontSize);
+    doc.text('STCF Results:', 10, y);
+    y += 10;
+    doc.setFontSize(textFontSize);
+    stcfResults.forEach((res) => {
+      doc.text(`Process ${res.id}: Completion Time - ${res.completionTime}`, 10, y);
+      y += 8;
+    });
+  
+    // MLFQ Results
+    y += 10;
+    doc.setFontSize(titleFontSize);
+    doc.text('MLFQ Results:', 10, y);
+    y += 10;
+    doc.setFontSize(textFontSize);
+    mlfqResults.forEach((res) => {
+      doc.text(`Process ${res.id}: Completion Time - ${res.completionTime}`, 10, y);
+      y += 8;
+    });
+  
     doc.save('cpu-scheduling-results.pdf');
   };
 
@@ -74,6 +115,15 @@ export default function Home() {
         </div>
         <div className="w-full md:w-1/2 h-64">
         <BarChart data={rrResults} title="RR Results" />
+        </div>
+        <div className="w-full md:w-1/2 h-64">
+        <BarChart data={sjfResults} title="SJF Results" />
+        </div>
+        <div className="w-full md:w-1/2 h-64">
+        <BarChart data={stcfResults} title="STCF Results" />
+        </div>
+        <div className="w-full md:w-1/2 h-64">
+        <BarChart data={mlfqResults} title="MLFQ Results" />
         </div>
       </div>
     </main>
