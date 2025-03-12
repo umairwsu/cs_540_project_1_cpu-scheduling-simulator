@@ -12,7 +12,7 @@ import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-export default function BarChart({ data }) {
+export default function BarChart({ data, title }) {
   const chartData = {
     labels: data.map((p) => `${p.id} (Burst: ${p.burstTime})`),
     datasets: [
@@ -25,13 +25,23 @@ export default function BarChart({ data }) {
   };
 
   const options = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: title, // Dynamically use the title prop
+        font: {
+          size: 18,
+        },
+      },
+      legend: {
+        display: false, // Hide legend if not needed
+      },
+    },
     animation: {
-      duration: 100, // Animation duration in milliseconds
-    //   easing: 'easeInOutBounce', // Easing effect
+      duration: 100,
     },
   };
 
   return <Bar data={chartData} options={options} />;
-
-//   return <Bar data={chartData} />;
 }
