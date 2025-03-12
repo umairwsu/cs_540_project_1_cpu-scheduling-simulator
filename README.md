@@ -2,6 +2,12 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+
+Install the packages by running this command:
+```bash
+npm install next react react-dom chart.js jspdf gh-pages tailwindcss postcss autoprefixer react-chartjs-2
+```
+
 First, run the development server:
 
 ```bash
