@@ -1,4 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
-
-export default nextConfig;
+const nextConfig = {
+    output: 'export',
+    images: {
+      unoptimized: true,
+    },
+    basePath: '/cs_540_project_1_cpu-scheduling-simulator',
+    trailingSlash: true,
+  };
+  
+  export default nextConfig;
